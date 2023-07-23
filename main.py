@@ -9,5 +9,7 @@ if __name__ == '__main__':
 
     bot = SecBot(options=options)
     bot.fetch_site()
-    bot.lookup_ticker("ryam") #TODO, add input fields
-    #bot.filter_annual_reports()
+    bot.set_ticker("ryam") #TODO, add input fields for ticker and filing date searches
+    bot.filter_filing_dates("2015-07-23", "2023-07-23")
+    bot.search()
+    bot.filter_annual_reports()
