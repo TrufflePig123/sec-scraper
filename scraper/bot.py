@@ -6,7 +6,7 @@ from selenium.webdriver.support.ui import Select
 class SecBot(webdriver.Chrome):
     def __init__(self, options):
         super().__init__(options=options)
-        self.implicitly_wait(5)
+        self.implicitly_wait(10)
 
     def fetch_site(self):
         self.get("https://www.sec.gov/edgar/search/")
@@ -39,4 +39,17 @@ class SecBot(webdriver.Chrome):
     def search(self):
         search = self.find_element(By.ID, "search")
         search.click()
+
+    def get_all_reports(self):
+        reports = self.find_element(By.CSS_SELECTOR, "a[data-adsh='0001597672-23-000013']") #TODO -- for later, grab all the report </a> tags and return them
+        
+        return [reports]
+    
+    def open_individual_document(self):
+        document_btn = self.find_element(By.ID, "open-file")
+        document_btn.click()
+
+    
+    
+
 
