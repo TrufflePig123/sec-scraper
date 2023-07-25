@@ -45,9 +45,22 @@ class SecBot(webdriver.Chrome):
         
         return [reports]
     
-    def open_individual_document(self):
+    def open_individual_document(self, report):
+        report.click()
         document_btn = self.find_element(By.ID, "open-file")
         document_btn.click()
+
+        #Tell the driver to navigate to the document webpage
+        self.get(report.get_attribute('href')) #FIXME
+
+    def test(self): #FIXME.. driver is still on the search page, when it should be on the doc page instead..
+        ele = self.find_element(By.ID, "open-submission")
+        ele.click()
+
+    def find_balance_sheet(self):
+        #row = self.find_element(By.CSS_SELECTOR, "td[content='Assets']")
+        row = self.find_element(By.XPATH, '//span[text()="Assets"]')
+        print(row.get_attribute('outerHTML'))
 
     
     

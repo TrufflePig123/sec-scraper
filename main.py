@@ -1,8 +1,7 @@
 from selenium import webdriver
 from scraper.bot import SecBot
+from scraper.datamanager import DataManager
 from selenium.webdriver.support.wait import WebDriverWait
-
-
 
 if __name__ == '__main__':
     options = webdriver.ChromeOptions()
@@ -19,7 +18,11 @@ if __name__ == '__main__':
     bot.refresh() #Refresh page to update the DOM once the filtered filing links are shown on the first page
     reports = bot.get_all_reports()
 
+    manager = DataManager()
     for report in reports:
-        report.click()
-        bot.open_individual_document()
+        bot.open_individual_document(report) #TODO -- driver needs to SWITCH PAGE to the individual doc
+        #bot.test()
+        bot.find_balance_sheet()
+
+
 
