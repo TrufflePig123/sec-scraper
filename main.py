@@ -21,9 +21,10 @@ if __name__ == '__main__':
     manager = DataManager()
 
     for report in reports:
-        bot.open_individual_document(report) #TODO -- driver needs to SWITCH PAGE to the individual doc
+        bot.open_individual_document(report) 
         balance = bot.find_balance_sheet()
         manager.convert_to_df(balance)
+    #TODO = Combine year-dfs into one consolidated balance sheet
 
 
 
