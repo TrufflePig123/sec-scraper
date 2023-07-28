@@ -54,10 +54,18 @@ class SecBot(webdriver.Chrome):
         self.get(document_btn.get_attribute("href"))
 
 
-    def find_balance_sheet(self):
-        row = self.find_element(By.XPATH, '//span[text()="Assets"]')
-        #Go up a certain number of parents
-        balance_sheet = row.find_element(By.XPATH, "../../../..")
+    def find_sheet(self, type): #TODO -- take the code from the test file and put it in here
+        
+        if type == "balance":
+           #Using a wildcard because some tables may not use spans, but other things like </p> tags. Every balance sheet should have the phrase 'total assets' somewhere within it
+            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]') 
+        elif type == "cash_flow":
+            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]')  #TODO: update these to contain identifing text
+        elif type == "income":
+            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]') 
+        
+        #Use xpath axis to find the nearest table
+        balance_sheet = row.find_element(By.XPATH, "./ancestor::table")
 
         return balance_sheet
 

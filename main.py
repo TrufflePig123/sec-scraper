@@ -22,8 +22,10 @@ if __name__ == '__main__':
 
     for report in reports:
         bot.open_individual_document(report) 
-        balance = bot.find_balance_sheet()
-        manager.convert_to_df(balance)
+        balance = bot.find_sheet(type="balance")
+        df_balance = manager.convert_to_df(balance)
+
+        print(df_balance)
     #TODO = Combine year-dfs into one consolidated balance sheet
 
 
