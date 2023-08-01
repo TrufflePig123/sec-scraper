@@ -41,9 +41,13 @@ class SecBot(webdriver.Chrome):
         search.click()
 
     def get_all_reports(self):
-        reports = self.find_element(By.CSS_SELECTOR, "a[data-adsh='0001597672-23-000013']") #TODO -- for later, grab all the report </a> tags and return them
+        #reports = self.find_element(By.CSS_SELECTOR, "a[data-adsh='0001597672-23-000013']") #TODO -- for later, grab all the report </a> tags and return them
+        reports = self.find_elements(By.XPATH, "//div[@id='hits']/descendant::a[@data-adsh]")
         
-        return [reports]
+        
+        return reports
+    
+       
     
     def open_individual_document(self, report_preview):
         report_preview.click()
@@ -55,22 +59,22 @@ class SecBot(webdriver.Chrome):
 
 
     def find_sheet(self, type): #TODO -- take the code from the test file and put it in here
-        
         if type == "balance":
            #Using a wildcard because some tables may not use spans, but other things like </p> tags. Every balance sheet should have the phrase 'total assets' somewhere within it
             row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]') 
         elif type == "cash_flow":
-            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]')  #TODO: update these to contain identifing text
+            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]')  #FIXME: update these to contain identifing text
         elif type == "income":
             row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]') 
         
         #Use xpath axis to find the nearest table
-        balance_sheet = row.find_element(By.XPATH, "./ancestor::table")
+        sheet = row.find_element(By.XPATH, "./ancestor::table")
 
-        return balance_sheet
-
-
+        return sheet
     
+    def get_year_range(self):
+        year_textboxes = self.find_elements(By.XPATH, "//td[@class='enddate']")
+
+        year_range = [d.text[0:4] for d in year_textboxes]
+        return year_range
     
-
-
