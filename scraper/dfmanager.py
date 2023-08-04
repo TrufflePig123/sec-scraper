@@ -19,6 +19,9 @@ class DataFrameManager():
         #Drop completely NaN columns
         df = df.dropna(axis=1, how="all")
 
+        df = df.applymap(str)
+        #df = df.astype(str)
+
         df_final = pd.DataFrame(columns=["Metric", year]) #FIXME replace this with the current report year. This should be what gets returned (the final prod)
         df_final["Metric"] = df[1]
 
@@ -27,6 +30,8 @@ class DataFrameManager():
             #Sometimes companies place share change notices like "Common stock issued as of Dec 31 2022" in the sheet, and we want to ignore that 
             return column.str.contains(fr'^((?!stock).)*[^0-9]?{year}') #BUG pandas removes all commas/periods, so this regex expression might need some tweaking (could still detect 2022 inside the sheet data)
             #TODO -- replace regex with the current year
+
+        #print(df.dtypes)
 
         most_recent_cols = df[df.columns[df.apply(regex).any()]]
 

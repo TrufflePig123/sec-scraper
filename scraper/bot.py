@@ -41,9 +41,7 @@ class SecBot(webdriver.Chrome):
         search.click()
 
     def get_all_reports(self):
-        #reports = self.find_element(By.CSS_SELECTOR, "a[data-adsh='0001597672-23-000013']") #TODO -- for later, grab all the report </a> tags and return them
         reports = self.find_elements(By.XPATH, "//div[@id='hits']/descendant::a[@data-adsh]")
-        
         
         return reports
     
@@ -57,18 +55,45 @@ class SecBot(webdriver.Chrome):
         #Naviagte to the document page
         self.get(document_btn.get_attribute("href"))
 
+    def find_balance_sheet(self): #Test fn
+        key_metrics = ['total assets', 'total liabilities', 'cash and cash equivalents', 'inventories', 'accounts receivable']
+        all_tables = self.find_elements(By.XPATH, '//*[contains(text(), "Total assets")]/ancestor::table')
+        table_match_counts = {}
+        for table in all_tables:
+            descendants = table.find_elements(By.XPATH, './descendant::*') 
+            descendant_hits = [element for element in set(descendants) if element.text.lower() in key_metrics] #This solution is nice, but this loop is VERY slow
+            #descendant_text = [element.text for element in set(descendants)]
+            num_matches = 0
+            #for metric in key_metrics:
+             #   num_matches += descendant_text.count(metric)
+
+            #table_match_counts[num_matches] = table
+            
+
+            table_match_counts[len(descendant_hits)] = table
+
+        most_matches = max(table_match_counts.keys())
+
+        sheet = table_match_counts[most_matches]
+        
+        print(sheet)
+        return sheet
+
+        #print(num_metric_matches)
 
     def find_sheet(self, type): #TODO -- take the code from the test file and put it in here
         if type == "balance":
            #Using a wildcard because some tables may not use spans, but other things like </p> tags. Every balance sheet should have the phrase 'total assets' somewhere within it
-            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]') 
-        elif type == "cash_flow":
-            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]')  #FIXME: update these to contain identifing text
+            row = self.find_element(By.XPATH, '//*[contains(text(), "Total assets")]') #FIXME: Sometimes, 'Total assets' is part of another table, and it scrapes that instead. We need to find a way to put multipple identifying phrases of a balance sheet in here. Triggered by ticker='aapl'
+        elif type == "cash_flow":               #FIXME: above xpath seems to be on the right track , but needs to be refined more..
+            row = self.find_element(By.XPATH, '//*[contains(text(), "Total assets")]')  #FIXME: update these to contain identifing text
         elif type == "income":
-            row = self.find_element(By.XPATH, f'//*[contains(text(), "Total assets")]') 
+            row = self.find_element(By.XPATH, '//*[contains(text(), "Total assets")]') 
         
         #Use xpath axis to find the nearest table
         sheet = row.find_element(By.XPATH, "./ancestor::table")
+
+
 
         return sheet
     
