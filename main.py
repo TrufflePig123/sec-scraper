@@ -48,7 +48,7 @@ if __name__ == '__main__':
         
     
 
-        print(df_balance)
+        print('\n', df_balance)
 
     
     #TODO = Combine year-dfs into one consolidated balance sheet

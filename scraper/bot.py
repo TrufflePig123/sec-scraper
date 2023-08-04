@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+import numpy as np
 
 
 class SecBot(webdriver.Chrome):
@@ -55,28 +56,23 @@ class SecBot(webdriver.Chrome):
         #Naviagte to the document page
         self.get(document_btn.get_attribute("href"))
 
-    def find_balance_sheet(self): #Test fn
-        key_metrics = ['total assets', 'total liabilities', 'cash and cash equivalents', 'inventories', 'accounts receivable']
+    def find_balance_sheet(self): 
+        key_metrics = ['total assets', 'total liabilities', 'cash and cash equivalents', 'inventories', 'accounts receivable'] #TODO: move this to the generic method
         all_tables = self.find_elements(By.XPATH, '//*[contains(text(), "Total assets")]/ancestor::table')
         table_match_counts = {}
         for table in all_tables:
-            descendants = table.find_elements(By.XPATH, './descendant::*') 
-            descendant_hits = [element for element in set(descendants) if element.text.lower() in key_metrics] #This solution is nice, but this loop is VERY slow
-            #descendant_text = [element.text for element in set(descendants)]
-            num_matches = 0
-            #for metric in key_metrics:
-             #   num_matches += descendant_text.count(metric)
+            descendants = table.find_elements(By.XPATH, './descendant::*') #FIXME Even with np arrays, this is VERY slow
+            descendant_text = np.array(map(lambda e: e.text.lower(), descendants)) #Compared to using a comprehension, this is much faster
 
-            #table_match_counts[num_matches] = table
+            mask = np.isin(descendant_text, key_metrics) 
+
+            table_match_counts[descendant_text[mask].size] = table
             
-
-            table_match_counts[len(descendant_hits)] = table
 
         most_matches = max(table_match_counts.keys())
 
         sheet = table_match_counts[most_matches]
         
-        print(sheet)
         return sheet
 
         #print(num_metric_matches)

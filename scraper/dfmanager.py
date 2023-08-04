@@ -22,8 +22,8 @@ class DataFrameManager():
         df = df.applymap(str)
         #df = df.astype(str)
 
-        df_final = pd.DataFrame(columns=["Metric", year]) #FIXME replace this with the current report year. This should be what gets returned (the final prod)
-        df_final["Metric"] = df[1]
+        df_final = pd.DataFrame(columns=["Metric", year]) 
+        df_final["Metric"] = df[1] #FIXME: THIS line in particular is an issue, because we do nothing to scrape the actual data here, we rather just assume that the middle column is the labels
 
         def regex(column):
             #This regex searches for the substring 2022 within each column, except for when the str contains 'stock'
@@ -31,13 +31,12 @@ class DataFrameManager():
             return column.str.contains(fr'^((?!stock).)*[^0-9]?{year}') #BUG pandas removes all commas/periods, so this regex expression might need some tweaking (could still detect 2022 inside the sheet data)
             #TODO -- replace regex with the current year
 
-        #print(df.dtypes)
 
         most_recent_cols = df[df.columns[df.apply(regex).any()]]
 
-        #print(most_recent_cols)
+        print(most_recent_cols)
 
-        df_final[year] = most_recent_cols.iloc[:, 1] 
+        df_final[year] = most_recent_cols.iloc[:, 1]  #BUG: potential bug here, so far this is fine, but this key could pose an issue if for example, the parser grabs 4 'most recent' cols instead of the expected 3.
 
         return df_final
 
