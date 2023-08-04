@@ -8,7 +8,7 @@ if __name__ == '__main__':
     options.add_experimental_option("detach", True)
     #options.add_argument("--window-size=2560,1440")
 
-    ticker = "aapl"
+    ticker = "rrgb"
     start_date = "2015-07-23" #TODO, add input fields for ticker and filing date searches
     end_date = "2023-07-23"
     dataframe_manager = DataFrameManager()
@@ -48,7 +48,6 @@ if __name__ == '__main__':
         
     
 
-        print('\n', df_balance)
 
     
     #TODO = Combine year-dfs into one consolidated balance sheet

@@ -56,26 +56,31 @@ class SecBot(webdriver.Chrome):
         #Naviagte to the document page
         self.get(document_btn.get_attribute("href"))
 
-    def find_balance_sheet(self): 
+    def find_balance_sheet(self): #TODO: still not done with this man!!
+        #The idea here is to look for certain keywords within all the tables the bot finds.
+        #The more matches, the more likely it is that the candidate table is the actual balance sheet, and not some other table that just happens to match the text.
         key_metrics = ['total assets', 'total liabilities', 'cash and cash equivalents', 'inventories', 'accounts receivable'] #TODO: move this to the generic method
-        all_tables = self.find_elements(By.XPATH, '//*[contains(text(), "Total assets")]/ancestor::table')
-        table_match_counts = {}
-        for table in all_tables:
-            descendants = table.find_elements(By.XPATH, './descendant::*') #FIXME Even with np arrays, this is VERY slow
-            descendant_text = np.array(map(lambda e: e.text.lower(), descendants)) #Compared to using a comprehension, this is much faster
+        all_candidate_tables = self.find_elements(By.XPATH, '//*[contains(text(), "Total assets")]/ancestor::table') #TODO
+        table_match_counts = {} #TODO might want to put an if - else here to speed up even more
+
+
+        #print(all_candidate_tables)
+        for table in all_candidate_tables:
+            descendants = table.find_elements(By.XPATH, './descendant::*') 
+
+            #The call to list here slows things down significantly, but is essential for an accurate translation of the text values into a np array.
+            descendant_text = np.array(list(map(lambda e: e.text.lower(), descendants))) #TODO -- try a way without calling list()
 
             mask = np.isin(descendant_text, key_metrics) 
-
             table_match_counts[descendant_text[mask].size] = table
             
-
         most_matches = max(table_match_counts.keys())
 
         sheet = table_match_counts[most_matches]
+
+        #print(table_match_counts)
         
         return sheet
-
-        #print(num_metric_matches)
 
     def find_sheet(self, type): #TODO -- take the code from the test file and put it in here
         if type == "balance":
