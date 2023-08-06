@@ -11,17 +11,23 @@ class DataFrameManager():
 
         html = table.get_attribute('outerHTML')
 
-        #testlist = pd.read_html(html)
         df = pd.read_html(html)[0] #FIXME For some reason, this only scrapes half the table on certain situations??
 
         #Drop completely NaN columns
         df = df.dropna(axis=1, how="all")
 
         df = df.applymap(str)
-        #df = df.astype(str)
 
         df_final = pd.DataFrame(columns=["Metric", year]) 
-        df_final["Metric"] = df[1] #FIXME: THIS line in particular is an issue, because we do nothing to scrape the actual data here, we rather just assume that column 1 is the labels
+
+        #print(df)
+        #mask = df.isin(['Total assets'])
+
+        metric_columns = df.columns[df.apply(lambda x: x == 'Total assets').any()].to_numpy() #BUG -- this might return a list of cols if read_html scrapes the metric column multiple times
+        metric_column = metric_columns[0]
+        #print(metric_column)
+
+        
 
         def regex(column):
             #This regex searches for the substring 2022 within each column, except for when the str contains 'stock'
@@ -31,9 +37,22 @@ class DataFrameManager():
 
         most_recent_cols = df[df.columns[df.apply(regex).any()]]
 
-        print(most_recent_cols)
+        #print(most_recent_cols)
 
-        df_final[year] = most_recent_cols.iloc[:, 1]  #BUG: potential bug here, so far this is fine, but this key could pose an issue if for example, the parser grabs 4 'most recent' cols instead of the expected 3.
+        mask = most_recent_cols.apply(lambda col: col.str.contains(r'[0-9]'))
+        numerical_data = df[mask.apply(lambda col: col.value_counts().get(True)).idxmax()]
+
+        #print(numerical_data)
+
+        
+            
+        #num_col = numerical_data.applymap(assert_num)
+
+        #print(num_col)
+        #print(metric_column)
+        df_final["Metric"] = df[metric_column]
+        df_final[year] = numerical_data
+        #df_final[year] = most_recent_cols.iloc[:, 1]  #BUG: this key could pose an issue if for example, the parser grabs 4 'most recent' cols instead of the expected 3.
 
         print(df_final)
 

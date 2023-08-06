@@ -8,7 +8,7 @@ if __name__ == '__main__':
     options.add_experimental_option("detach", True)
     #options.add_argument("--window-size=2560,1440")
 
-    ticker = "rrgb"
+    ticker = "meta"
     start_date = "2015-07-23" #TODO, add input fields for ticker and filing date searches
     end_date = "2023-07-23"
     dataframe_manager = DataFrameManager()
@@ -24,10 +24,7 @@ if __name__ == '__main__':
     reports = bot.get_all_reports()
     years = bot.get_year_range()
 
-    
-    
-
-    for i in range(len(reports)):
+    for i in range(len(reports)):#FIXME: this loop crashes sometimes, need to find out why
         new_reports = bot.get_all_reports() #FIXME -- refactor this, this is a shoddy way of doing this
         report = new_reports[i]
         current_year = years[i]

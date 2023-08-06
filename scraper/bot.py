@@ -74,6 +74,7 @@ class SecBot(webdriver.Chrome):
             mask = np.isin(descendant_text, key_metrics) 
             table_match_counts[descendant_text[mask].size] = table
             
+            
         most_matches = max(table_match_counts.keys())
 
         sheet = table_match_counts[most_matches]
