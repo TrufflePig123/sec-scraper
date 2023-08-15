@@ -16,7 +16,7 @@ class DataFrameManager():
         #Drop completely NaN columns
         df = df.dropna(axis=1, how="all")
 
-        df = df.applymap(str)
+        df = df.applymap(str, na_action='ignore')
 
         df_final = pd.DataFrame(columns=["Metric", year]) 
 

@@ -77,13 +77,13 @@ def test_convert_to_df(balance):
 
 
 @pytest.fixture
-def setup_statement_merge():
+def setup_statement_merge(ticker='pack'):
     '''Returns all scraped balance sheet instances in a list.'''
     dataframe_manager = DataFrameManager()
     options = webdriver.ChromeOptions()
     options.add_experimental_option("detach", True)
     bot = SecBot(options=options)
-    bot.get(f"https://www.sec.gov/edgar/search/#/dateRange=custom&entityName=aapl&startdt=2019-07-23&enddt=2023-07-23&filter_forms=10-K")
+    bot.get(f"https://www.sec.gov/edgar/search/#/dateRange=custom&entityName={ticker}&startdt=2019-07-23&enddt=2023-07-23&filter_forms=10-K")
 
     reports = bot.get_all_reports()
     years = bot.get_year_range()
@@ -108,15 +108,17 @@ def setup_statement_merge():
         all_balance_sheets.append(df_balance)
 
         #Go back to the reports
-        bot.get(f"https://www.sec.gov/edgar/search/#/dateRange=custom&entityName=aapl&startdt=2019-07-23&enddt=2023-07-23&filter_forms=10-K")
+        bot.get(f"https://www.sec.gov/edgar/search/#/dateRange=custom&entityName={ticker}&startdt=2019-07-23&enddt=2023-07-23&filter_forms=10-K")
     return all_balance_sheets 
 
 def test_merge_all_statements(setup_statement_merge):
     all_statements = setup_statement_merge
 
 
-    statements_merged = reduce(lambda left, right: pd.merge(left, right), all_statements)
-    statements_merged = statements_merged.drop_duplicates() #TODO: need to drop the nan values here, but note that the nans are strings, so need to use drop()
+    statements_merged = reduce(lambda left, right: pd.merge(left, right, how='inner', on="Metric"), all_statements).drop_duplicates().dropna()
+    #FIXME: This almost works (for appl), but scrapes weirdly when multiple of the same metric are found (e.g 2 datapoints for marketable securities)
+
+    
     #df_base_year = all_statements[0]
     #for statement in all_statements[1:]:
      #   df_base_year.merge(statement) #THis returns something
