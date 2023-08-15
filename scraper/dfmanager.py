@@ -56,5 +56,7 @@ class DataFrameManager():
 
         print(df_final)
 
+        #df_final.set_index('Metric')
+
         return df_final
 

@@ -17,7 +17,7 @@ class SecBot(webdriver.Chrome):
 
     def set_ticker(self, ticker):
         ticker_search = self.find_element(By.ID, "entity-full-form")
-        ticker_search.send_keys(ticker)
+        ticker_search.send_keys(ticker) #TODO: ticker='meta' triggers this bug, b/c need to actually click the dropdown menu.
 
     def filter_filing_dates(self, date_from, date_to): #year, month day
         #Explicitly marking the date selector as a Select object allows us to switch between options using the option text value. 
@@ -60,7 +60,9 @@ class SecBot(webdriver.Chrome):
         #The idea here is to look for certain keywords within all the tables the bot finds.
         #The more matches, the more likely it is that the candidate table is the actual balance sheet, and not some other table that just happens to match the text.
         key_metrics = ['total assets', 'total liabilities', 'cash and cash equivalents', 'inventories', 'accounts receivable'] #TODO: move this to the generic method
-        all_candidate_tables = self.find_elements(By.XPATH, '//*[contains(text(), "Total assets")]/ancestor::table') #TODO
+        all_candidate_tables = self.find_elements(By.XPATH, '//*[contains(text(), "Total assets")]/ancestor::table') #TODO 
+
+        print(all_candidate_tables)
         table_match_counts = {} #TODO might want to put an if - else here to speed up even more
 
 
